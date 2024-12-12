@@ -1,9 +1,12 @@
 package application.model;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+
 public class O {
     private int x;
     private int y;
-    private SinhVat sinhvat;
+    private ObjectProperty<SinhVat> sinhvat = new SimpleObjectProperty<>(); // Dùng ObjectProperty để bind
 
     public O(int x, int y) {
         this.x = x;
@@ -11,15 +14,19 @@ public class O {
     }
 
     public SinhVat getSinhvat() {
-        return sinhvat;
+        return sinhvat.get();
     }
 
     public void setSinhvat(SinhVat sinhvat) {
-        this.sinhvat = sinhvat;
+        this.sinhvat.set(sinhvat);
+    }
+
+    public ObjectProperty<SinhVat> sinhvatProperty() {
+        return sinhvat;
     }
 
     // Kiểm tra ô có trống không
     public boolean coTrong() {
-        return sinhvat == null;
+        return sinhvat.get() == null;
     }
 }

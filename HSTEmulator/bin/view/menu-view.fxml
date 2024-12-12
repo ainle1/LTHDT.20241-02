@@ -11,7 +11,8 @@
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="500.0"
             prefWidth="600.0" xmlns="http://javafx.com/javafx/20.0.1"
-            fx:controller="application.controller.MenuController">
+            fx:controller="application.controller.MenuController"
+            stylesheets="@menu-view.css">
     <center>
         <VBox alignment="CENTER" prefHeight="350.0" prefWidth="590.0" spacing="10.0" BorderPane.alignment="CENTER">
             <padding>
@@ -39,7 +40,7 @@
 
             <!-- Nút Start -->
             <Button fx:id="btnStart" mnemonicParsing="false" onAction="#onStartClick" prefHeight="30.0"
-                    prefWidth="110.0" text="Start">
+                    prefWidth="180.0" text="Start">
                 <VBox.margin>
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
                 </VBox.margin>
@@ -47,10 +48,11 @@
                     <Cursor fx:constant="HAND"/>
                 </cursor>
             </Button>
+            
 
             <!-- Nút Help -->
             <Button fx:id="btnHelp" mnemonicParsing="false" onAction="#onHelpClick" prefHeight="30.0"
-                    prefWidth="110.0" text="Help">
+                    prefWidth="180.0" text="Help">
                 <VBox.margin>
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
                 </VBox.margin>
@@ -61,7 +63,7 @@
 
             <!-- Nút Exit -->
             <Button fx:id="btnExit" mnemonicParsing="false" onAction="#onExitClick" prefHeight="30.0"
-                    prefWidth="110.0" text="Exit">
+                    prefWidth="180.0" text="Exit">
                 <VBox.margin>
                     <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
                 </VBox.margin>

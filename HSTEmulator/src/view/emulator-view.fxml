@@ -12,86 +12,98 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.control.Button?>
+
 
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controller.EmulatorController">
-    <BorderPane>
+<BorderPane>
 
-        <!-- Top Section (Days : 1 + Additional Info) -->
-        <top>
-            <VBox alignment="CENTER" spacing="10">
-                <!-- Days label -->
-                <Label style="-fx-font-size: 24; -fx-font-weight: bold;" text="Days : 1" />
-                <!-- Additional Information (Producers, Herbivores, Carnivores) -->
-                <HBox alignment="CENTER_LEFT" prefHeight="67.0" prefWidth="292.0" spacing="10">
-<HBox spacing="5" alignment="CENTER_LEFT">
-    <!-- Icon for Producers -->
-    <ImageView fitHeight="24" fitWidth="24">
-        <image>
-            <Image url="application/resources/grass.png" />
-        </image>
-    </ImageView>
-    <!-- Producers Label -->
-    <Label text="Producers : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
-    <Label fx:id="slsvSanXuatLabel" text="50" style="-fx-font-size: 16; -fx-font-weight: normal;" />
-</HBox>
-
-<HBox spacing="5" alignment="CENTER_LEFT">
-    <!-- Icon for Herbivores -->
-    <ImageView fitHeight="24" fitWidth="24">
-        <image>
-            <Image url="application/resources/cow.png" />
-        </image>
-    </ImageView>
-    <!-- Herbivores Label -->
-    <Label text="Herbivores : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
-    <Label fx:id="slsvAnCoLabel" text="100" style="-fx-font-size: 16; -fx-font-weight: normal;" />
-</HBox>
-
-<HBox spacing="5" alignment="CENTER_LEFT">
-    <!-- Icon for Carnivores -->
-    <ImageView fitHeight="24" fitWidth="24">
-        <image>
-            <Image url="application/resources/wolf.png" />
-        </image>
-    </ImageView>
-    <!-- Carnivores Label -->
-    <Label text="Carnivores : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
-    <Label fx:id="slsvAnThitLabel" text="50" style="-fx-font-size: 16; -fx-font-weight: normal;" />
-</HBox>
-
-
-                    <Region HBox.hgrow="ALWAYS" />
-                    <!-- Settings Icon -->
-                    <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+    <!-- Top Section (Days : 1 + Additional Info) -->
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <!-- Days label -->
+            <HBox spacing="5" alignment="CENTER">
+                <Label style="-fx-font-size: 24; -fx-font-weight: bold;" text="Days : " />
+                <Label fx:id="dayLabel" text="...." style="-fx-font-size: 24; -fx-font-weight: normal;" />
+            </HBox>
+            <!-- Additional Information (Producers, Herbivores, Carnivores) -->
+            <HBox alignment="CENTER_LEFT" prefHeight="67.0" prefWidth="292.0" spacing="10">
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <!-- Icon for Producers -->
+                    <ImageView fitHeight="24" fitWidth="24">
                         <image>
-                            <Image url="application/resources/settings.png" />
+                            <Image url="/application/resources/grass.png" />
                         </image>
                     </ImageView>
-                    <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" onMouseClicked="#handleExitClick">
-                        <image>
-                            <Image url="application/resources/exit.png" />
-                        </image>
-                    </ImageView>
+                    <!-- Producers Label -->
+                    <Label text="Producers : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
+                    <Label fx:id="slsvSanXuatLabel" text="...." style="-fx-font-size: 16; -fx-font-weight: normal;" />
                 </HBox>
-            </VBox>
-        </top>
+                
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <!-- Icon for Herbivores -->
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image>
+                            <Image url="/application/resources/cow.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Herbivores Label -->
+                    <Label text="Herbivores : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
+                    <Label fx:id="slsvAnCoLabel" text="....." style="-fx-font-size: 16; -fx-font-weight: normal;" />
+                </HBox>
+                
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <!-- Icon for Carnivores -->
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image>
+                            <Image url="/application/resources/wolf.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Carnivores Label -->
+                    <Label text="Carnivores : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
+                    <Label fx:id="slsvAnThitLabel" text="....." style="-fx-font-size: 16; -fx-font-weight: normal;" />
+                </HBox>
+                
+                <!-- Spacer to push buttons to the right -->
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <!-- Add icons for Exit and Settings -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <!-- Icon for Settings -->
+                    <Button fx:id="btnSettings" style="-fx-background-color: transparent; -fx-border: none;">
+                        <graphic>
+                            <ImageView fitHeight="24" fitWidth="24">
+                                <image>
+                                    <Image url="/application/resources/settings.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                    
+                    <!-- Icon for Exit -->
+                    <Button fx:id="btnExit" style="-fx-background-color: transparent; -fx-border: none;"  onAction="#handleExitClick">
+                        <graphic>
+                            <ImageView fitHeight="32" fitWidth="48">
+                                <image>
+                                    <Image url="/application/resources/exit.png" />
+                                </image>
+                            </ImageView>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </HBox>
+        </VBox>
+    </top>
 
-        <!-- Center Section (Grid representing the game board) -->
-        <center>
-            <GridPane fx:id="gridPane" style="-fx-padding: 10;">
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" />
-                    <ColumnConstraints hgrow="ALWAYS" />
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints vgrow="ALWAYS" />
-                    <RowConstraints vgrow="ALWAYS" />
-                </rowConstraints>
-            </GridPane>
-        </center>
+    <!-- Center Section: GridPane for Emulator -->
+    <center>
+        <GridPane fx:id="gridPane" gridLinesVisible="true" hgap="0" vgap="0">
+            <!-- Columns and Rows should be dynamically created in the controller -->
+        </GridPane>
+    </center>
 
-    </BorderPane>
-    <padding>
-        <Insets bottom="50.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
+</BorderPane>
+
 </StackPane>

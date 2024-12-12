@@ -1,6 +1,7 @@
 package application;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -19,6 +20,14 @@ public class Main extends Application {
             Scene scene = new Scene(root, 800, 500); // Kích thước màn hình
             primaryStage.setScene(scene);
             primaryStage.setTitle("Ecosystem Emulator");  // Tiêu đề của cửa sổ
+
+            // Xử lý sự kiện khi nhấn nút X
+            primaryStage.setOnCloseRequest(event -> {
+                System.out.println("Cửa sổ đang đóng. Ứng dụng sẽ thoát.");
+                Platform.exit();  // Thoát JavaFX
+                System.exit(0);   // Dừng JVM hoàn toàn
+            });
+
             primaryStage.show();
         } catch (Exception e) {
             e.printStackTrace();
