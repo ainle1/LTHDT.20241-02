@@ -20,9 +20,9 @@ public class SinhVatSanXuat extends SinhVat {
 
 
     @Override
-    public void sinhsan() {
+    public synchronized void sinhsan() {
         // Kiểm tra điều kiện chỉ sinh sản khi timeunit chia hết cho 10
-        if (heSinhThai.getBuocThoiGian() % 9 == 0) {
+        if (heSinhThai.buocThoiGianProperty().get() % 9 == 0) {
             Random random = new Random();
 
             // Lấy kích thước lưới
@@ -43,13 +43,11 @@ public class SinhVatSanXuat extends SinhVat {
                     // Tạo sinh vật mới tại ô trống
                     SinhVatSanXuat sinhVatMoi = new SinhVatSanXuat(xMoi, yMoi, heSinhThai);
                     oMoi.setSinhvat(sinhVatMoi);
-
-                    // Ghi nhận sinh vật mới trong hệ sinh thái
-                    Platform.runLater(() -> {
-                        heSinhThai.setSlsvSanXuat(heSinhThai.getSlsvSanXuat() + 1);
-                    });
-
                     System.out.println("Sinh vật sản xuất tại (" + this.x + ", " + this.y + ") đã sinh ra một sinh vật mới tại (" + xMoi + ", " + yMoi + ").");
+                    // Tăng birthRate trong hệ sinh thái
+                    Platform.runLater(() -> {
+                        heSinhThai.birthRateProperty().set(heSinhThai.birthRateProperty().get() + 1);
+                    });
                     return; // Chỉ sinh sản một lần trong mỗi chu kỳ
                 }
             }
@@ -61,7 +59,7 @@ public class SinhVatSanXuat extends SinhVat {
 
 
 	@Override
-    public void chet() {
+    public synchronized void chet() {
         // Kiểm tra nếu năng lượng <= 0 thì sinh vật chết
         if (this.energy <= 0) {
             // Lấy ô hiện tại của sinh vật
@@ -70,21 +68,15 @@ public class SinhVatSanXuat extends SinhVat {
                 // Loại bỏ sinh vật khỏi ô
                 oHienTai.setSinhvat(null);
             }
-
-            // Cập nhật trạng thái hệ sinh thái
-            Platform.runLater(() -> {
-                // Giảm số lượng sinh vật sản xuất nếu còn tồn tại
-                if (heSinhThai.getSlsvSanXuat() > 0) {
-                    heSinhThai.setSlsvSanXuat(heSinhThai.getSlsvSanXuat() - 1);
-                }
-                // Tăng tỷ lệ chết
-                heSinhThai.setDeathRate(heSinhThai.getDeathRate() + 1);
-                System.out.println("Sinh vật sản xuất tại (" + this.x + ", " + this.y + ") đã chết.");
-            });
         }
     }
 	
 	public void quanghop() {
+	    // Kiểm tra nếu năng lượng hiện tại đã đạt mức tối đa (200), không cần cộng thêm
+	    if (this.energy >= 200) {
+	        System.out.println("Năng lượng đã đủ, không cần quang hợp thêm.");
+	        return;  // Nếu năng lượng >= 200, không thực hiện cộng năng lượng nữa
+	    }
 	    // Tạo một đối tượng Random
 	    Random random = new Random();
 

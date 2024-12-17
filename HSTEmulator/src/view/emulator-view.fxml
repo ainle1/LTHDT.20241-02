@@ -27,6 +27,16 @@
             <HBox spacing="5" alignment="CENTER">
                 <Label style="-fx-font-size: 24; -fx-font-weight: bold;" text="Days : " />
                 <Label fx:id="dayLabel" text="...." style="-fx-font-size: 24; -fx-font-weight: normal;" />
+                <!-- Icon for Stop Resume -->
+				<Button fx:id="btnStopResume" style="-fx-background-color: transparent; -fx-border: none;" onAction="#handleStopResume">
+				    <graphic>
+				        <ImageView fx:id="btnIcon" fitHeight="20" fitWidth="20">
+				            <image>
+				                <Image url="/application/resources/stop.png" />
+				            </image>
+				        </ImageView>
+				    </graphic>
+				</Button>
             </HBox>
             <!-- Additional Information (Producers, Herbivores, Carnivores) -->
             <HBox alignment="CENTER_LEFT" prefHeight="67.0" prefWidth="292.0" spacing="10">
@@ -68,6 +78,31 @@
                 
                 <!-- Spacer to push buttons to the right -->
                 <Region HBox.hgrow="ALWAYS" />
+                
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <!-- Icon for Herbivores -->
+                    <ImageView fitHeight="32" fitWidth="32">
+                        <image>
+                            <Image url="/application/resources/deathrate.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Herbivores Label -->
+                    <Label text="DeathRate : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
+                    <Label fx:id="deathRateLabel" text="....." style="-fx-font-size: 16; -fx-font-weight: normal;" />
+                </HBox>
+                
+                <HBox spacing="5" alignment="CENTER_LEFT">
+                    <!-- Icon for Herbivores -->
+                    <ImageView fitHeight="24" fitWidth="24">
+                        <image>
+                            <Image url="/application/resources/birthrate.png" />
+                        </image>
+                    </ImageView>
+                    <!-- Herbivores Label -->
+                    <Label text="BirthRate : " style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: green;" />
+                    <Label fx:id="birthRateLabel" text="....." style="-fx-font-size: 16; -fx-font-weight: normal;" />
+                </HBox>
+                
                 
                 <!-- Add icons for Exit and Settings -->
                 <HBox spacing="10" alignment="CENTER_LEFT">

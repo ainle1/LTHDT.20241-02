@@ -4,6 +4,7 @@ import java.util.Random;
 
 import javafx.application.Platform;
 
+
 public class SinhVatAnCo extends SinhVat {
 
     // Constructor không tham số, sẽ gọi constructor của lớp cha và gán hệ sinh thái
@@ -19,7 +20,7 @@ public class SinhVatAnCo extends SinhVat {
     }
 
     // Phương thức di chuyển, tìm mục tiêu là SinhVatSanXuat
-    public void dichuyen() {
+    public synchronized void dichuyen() {
             // Tìm sinh vật sản xuất gần nhất
             SinhVatSanXuat sinhVatSanXuatGanNhat = timSinhVatSanXuatGanNhat();
 
@@ -71,7 +72,7 @@ public class SinhVatAnCo extends SinhVat {
     }
 
     // Phương thức tìm SinhVatSanXuat gần nhất
-    private SinhVatSanXuat timSinhVatSanXuatGanNhat() {
+    private synchronized SinhVatSanXuat timSinhVatSanXuatGanNhat() {
         SinhVatSanXuat sinhVatSanXuatGanNhat = null;
         double khoangCachMin = Double.MAX_VALUE;
 
@@ -95,7 +96,7 @@ public class SinhVatAnCo extends SinhVat {
     }
 
     // Phương thức di chuyển ngẫu nhiên khi không tìm thấy mục tiêu
-    private void diChuyenNgauNhien() {
+    private synchronized void diChuyenNgauNhien() {
         int[][] huongDiChuyen = {
             {-1, 0}, {1, 0}, {0, -1}, {0, 1},
             {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
@@ -118,9 +119,8 @@ public class SinhVatAnCo extends SinhVat {
 
     // Phương thức sinh sản
     @Override
-    public void sinhsan() {
-        if (this.energy > 200) {
-            heSinhThai.setBirthRate(heSinhThai.getBirthRate() + 1);
+    public synchronized void sinhsan() {
+        if (this.energy > 250) {
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
                     int xMoi = this.x + dx;
@@ -133,8 +133,9 @@ public class SinhVatAnCo extends SinhVat {
                         if (oLanhCan.coTrong()) {
                             SinhVatAnCo sinhvatMoi = new SinhVatAnCo(xMoi, yMoi, heSinhThai);
                             oLanhCan.setSinhvat(sinhvatMoi);
+                        	// Tăng birthRate trong hệ sinh thái
                             Platform.runLater(() -> {
-                                heSinhThai.setSlsvAnCo(heSinhThai.getSlsvAnCo() + 1);
+                                heSinhThai.birthRateProperty().set(heSinhThai.birthRateProperty().get() + 1);
                             });
                             System.out.println("Sinh vật AnCo tại (" + this.x + ", " + this.y + ") đã sinh sản tại (" + xMoi + ", " + yMoi + ").");
                             return;
@@ -145,7 +146,7 @@ public class SinhVatAnCo extends SinhVat {
         }
     }
 
-    public void tieuhao() {
+    public synchronized void tieuhao() {
         // Tạo một đối tượng Random
         Random random = new Random();
 
@@ -159,26 +160,22 @@ public class SinhVatAnCo extends SinhVat {
     
     // Phương thức chết
     @Override
-    public void chet() {
+    public synchronized void chet() {
         if (this.energy <= 0) {
             O oHienTai = heSinhThai.getO(this.x, this.y);
             if (oHienTai != null && oHienTai.getSinhvat() != null) {
                 oHienTai.setSinhvat(null);
             }
-
+         // Tăng deathRate trong hệ sinh thái
             Platform.runLater(() -> {
-                if (heSinhThai.getSlsvAnCo() > 0) {
-                    heSinhThai.setSlsvAnCo(heSinhThai.getSlsvAnCo() - 1);
-                }
-                heSinhThai.setDeathRate(heSinhThai.getDeathRate() + 1);
-                System.out.println("Sinh vật ăn cỏ tại (" + this.x + ", " + this.y + ") đã chết.");
+                heSinhThai.deathRateProperty().set(heSinhThai.deathRateProperty().get() + 1);
             });
         }
     }
     
     
  // Phương thức tiêu thụ (giống với logic của SinhVatAnThit)
-    public boolean tieuthu() {
+    public synchronized boolean tieuthu() {
         // Kiểm tra nếu năng lượng hiện tại < 150 thì mới thực hiện tiêu thụ
         if (this.energy < 150) {
             // Tìm SinhVatSanXuat gần nhất
@@ -211,15 +208,12 @@ public class SinhVatAnCo extends SinhVat {
                 if (oSinhVatAnCo != null) {
                     oSinhVatAnCo.setSinhvat(this);
                 }
-
-                // Cập nhật số lượng SinhVatSanXuat
+                
+             // Tăng deathhRate trong hệ sinh thái
                 Platform.runLater(() -> {
-                    if (heSinhThai.getSlsvSanXuat() > 0) {
-                        heSinhThai.setSlsvSanXuat(heSinhThai.getSlsvSanXuat() - 1);
-                    }
+                    heSinhThai.deathRateProperty().set(heSinhThai.deathRateProperty().get() + 1);
                 });
-
-
+                
                 return true; // Tiêu thụ thành công
             }
 

@@ -2,11 +2,9 @@ package application.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -19,11 +17,7 @@ import javafx.scene.image.Image;
 import javafx.application.Platform; // Import Platform for thread handling
 import javafx.stage.WindowEvent;  // Import for window close event
 import javafx.scene.control.Button;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import application.model.HeSinhThai;
 import application.model.O;
@@ -40,6 +34,12 @@ public class EmulatorController {
     private GridPane gridPane;  // Liên kết với GridPane trong FXML
 
     @FXML
+    private Label deathRateLabel;  // Liên kết với Label tỉ lệ tử vong
+    
+    @FXML
+    private Label birthRateLabel;  // Liên kết với Label tỉ lệ tử vong
+    
+    @FXML
     private Label dayLabel;  // Liên kết với Label ngày (bước thời gian)
     @FXML
     private Label slsvSanXuatLabel;  // Liên kết với Label trong FXML
@@ -51,6 +51,12 @@ public class EmulatorController {
     @FXML
     private Button btnExit;
     
+    @FXML
+    private Button btnStopResume;
+    @FXML
+    private ImageView btnIcon;
+
+    private boolean isStopped = false;
     // Phương thức khởi tạo
     public void initialize() {
         System.out.println("Initializing EmulatorController...");
@@ -100,9 +106,11 @@ public class EmulatorController {
             slsvSanXuatLabel.textProperty().bind(hesinhthai.slsvSanXuatProperty().asString());
             slsvAnCoLabel.textProperty().bind(hesinhthai.slsvAnCoProperty().asString());
             slsvAnThitLabel.textProperty().bind(hesinhthai.slsvAnThitProperty().asString());
-
+            deathRateLabel.textProperty().bind(hesinhthai.deathRateProperty().asString());
+            birthRateLabel.textProperty().bind(hesinhthai.birthRateProperty().asString());
             // Liên kết Label bước thời gian với property buocThoiGian
             dayLabel.textProperty().bind(hesinhthai.buocThoiGianProperty().asString());
+            
         } else {
             // Nếu phương thức generateEcosystem không trả về đúng 3 giá trị
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -230,6 +238,20 @@ public class EmulatorController {
             }
         }
     }
-
-
+    
+ // Phương thức xử lý khi nhấn vào Stop Resume Button
+    @FXML
+    private void handleStopResume() {
+        if (!isStopped) {
+            // Chuyển sang trạng thái Stop
+            hesinhthai.dungLai();
+            btnIcon.setImage(new Image("/application/resources/resume.png")); // Thay đổi icon
+            isStopped = true;
+        } else {
+            // Chuyển sang trạng thái Resume
+            hesinhthai.tieptuc(); // Giả sử bạn có phương thức khởi động lại
+            btnIcon.setImage(new Image("/application/resources/stop.png")); // Thay đổi icon
+            isStopped = false;
+        }
+    }
 }
