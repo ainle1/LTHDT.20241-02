@@ -16,8 +16,8 @@ public class HeSinhThai {
     private O[][] luoi;  // Mảng 2 chiều lưu trữ các ô trong lưới
     private int chieuNgang = 20;
     private int chieuRong = 10;
-    private int deathrate = 0;
-	private int birthrate = 0;
+    private IntegerProperty deathrate = new SimpleIntegerProperty(0) ;
+	private IntegerProperty birthrate = new SimpleIntegerProperty(0);
 	private IntegerProperty buocThoiGian = new SimpleIntegerProperty(1); // Sử dụng IntegerProperty
     private IntegerProperty slsvSanXuat = new SimpleIntegerProperty();
     private IntegerProperty slsvAnCo = new SimpleIntegerProperty();
@@ -43,7 +43,27 @@ public class HeSinhThai {
     }
     
     
-    public void batDauCapnhatTheoThoiGian() {
+    public synchronized IntegerProperty getDeathrate() {
+		return deathrate;
+	}
+
+
+	public synchronized void setDeathrate(IntegerProperty deathrate) {
+		this.deathrate = deathrate;
+	}
+
+
+	public synchronized IntegerProperty getBirthrate() {
+		return birthrate;
+	}
+
+
+	public synchronized void setBirthrate(IntegerProperty birthrate) {
+		this.birthrate = birthrate;
+	}
+
+
+	public void batDauCapnhatTheoThoiGian() {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         
         // Thực thi phương thức Capnhat sau mỗi 1 giây
@@ -55,6 +75,11 @@ public class HeSinhThai {
     
     public void dungLai() {
     	this.isStopped = true;
+    }
+    
+    
+    public void tieptuc() {
+    	this.isStopped = false;
     }
     
  // Phương thức khởi tạo sinh vật vào các ô trong lưới
@@ -107,96 +132,89 @@ public class HeSinhThai {
 
 
     // Phương thức cập nhật trạng thái của hệ sinh thái
-    public void Capnhat() {
-        // Danh sách lưu các sinh vật đã được xử lý
+    public synchronized void Capnhat() {
         List<SinhVat> sinhVatDaXuLy = new ArrayList<>();
 
-        // Kiểm tra trạng thái dừng vòng lặp
         if (isStopped) {
-            return;  // Nếu isStopped là true, thoát khỏi vòng lặp
+            return;
         }
 
         for (int i = 0; i < luoi.length; i++) {
-            if (isStopped) {
-                return;  // Nếu isStopped là true, thoát khỏi vòng lặp
-            }
+            if (isStopped) return;
 
             for (int j = 0; j < luoi[i].length; j++) {
-                if (isStopped) {
-                    return;  // Nếu isStopped là true, thoát khỏi vòng lặp
-                }
+                if (isStopped) return;
 
                 if (!luoi[i][j].coTrong()) {
                     SinhVat sinhvat = luoi[i][j].getSinhvat();
 
-                    // Chỉ xử lý sinh vật chưa được xử lý trong vòng lặp này
                     if (sinhvat != null && !sinhVatDaXuLy.contains(sinhvat)) {
-                        sinhVatDaXuLy.add(sinhvat); // Đánh dấu sinh vật đã được xử lý
+                        sinhVatDaXuLy.add(sinhvat);
 
-                        // Xử lý sinh vật
+                        // Xử lý logic từng loại sinh vật
                         if (sinhvat instanceof SinhVatAnCo) {
-                        	// Giảm số lượng sinh vật ăn cỏ theo logic tiêu hao năng lượng 
                             SinhVatAnCo sinhVatAnCo = (SinhVatAnCo) sinhvat;
-
-                            // Kiểm tra xác suất 50% để di chuyển
                             Random random = new Random();
-                            if (random.nextInt(2) == 0) {  // 50% xác suất (0 hoặc 1)
-                                sinhVatAnCo.dichuyen();
-                            }
+                            if (random.nextInt(2) == 0) sinhVatAnCo.dichuyen();
 
-                            // Giảm năng lượng sau mỗi lần di chuyển hoặc thực hiện hành động
                             sinhVatAnCo.tieuhao();
                             sinhVatAnCo.tieuthu();
-                            
-                            // Kiểm tra nếu năng lượng <= 0 thì sinh vật chết
-                            if (sinhVatAnCo.getEnergy() <= 0) {
-                                sinhVatAnCo.chet();
-                            } else {
-                                // Nếu năng lượng đủ, thực hiện sinh sản
-                                sinhVatAnCo.sinhsan();
-                            }
+                            if (sinhVatAnCo.getEnergy() <= 0) sinhVatAnCo.chet();
+                            else sinhVatAnCo.sinhsan();
+
                         } else if (sinhvat instanceof SinhVatAnThit) {
-                        	SinhVatAnThit sinhVatAnThit = (SinhVatAnThit) sinhvat;
-
-                            // Kiểm tra xác suất 50% để di chuyển
+                            SinhVatAnThit sinhVatAnThit = (SinhVatAnThit) sinhvat;
                             Random random = new Random();
-                            if (random.nextInt(2) == 0) {  // 50% xác suất (0 hoặc 1)
-                                sinhVatAnThit.dichuyen();
-                            }
+                            if (random.nextInt(2) == 0) sinhVatAnThit.dichuyen();
 
-                            // Giảm năng lượng sau mỗi lần di chuyển hoặc thực hiện hành động tiêu thụ
                             sinhVatAnThit.tieuhao();
-                            sinhVatAnThit.tieuthu();  // Tiến hành tiêu thụ nếu có
+                            sinhVatAnThit.tieuthu();
+                            if (sinhVatAnThit.getEnergy() <= 0) sinhVatAnThit.chet();
+                            else sinhVatAnThit.sinhsan();
 
-                            // Kiểm tra nếu năng lượng <= 0 thì sinh vật chết
-                            if (sinhVatAnThit.getEnergy() <= 0) {
-                                sinhVatAnThit.chet();
-                            } else {
-                                // Nếu năng lượng đủ, thực hiện sinh sản
-                                sinhVatAnThit.sinhsan();
-                            }
                         } else if (sinhvat instanceof SinhVatSanXuat) {
-                        	SinhVatSanXuat sinhVatSanXuat = (SinhVatSanXuat) sinhvat;
-
-                        	// Tạo Random để xác định tỷ lệ thực hiện sinh sản
-                        	Random random = new Random();
-                        	if (random.nextInt(100) < 30) { // Xác suất 30%
-                        	    sinhVatSanXuat.sinhsan();
-                        	}
-
-                        	// Gọi phương thức quanghop() trên đối tượng sinhVatSanXuat
-                        	sinhVatSanXuat.quanghop();
+                            SinhVatSanXuat sinhVatSanXuat = (SinhVatSanXuat) sinhvat;
+                            Random random = new Random();
+                            if (random.nextInt(100) < 30) sinhVatSanXuat.sinhsan();
+                            sinhVatSanXuat.quanghop();
                         }
                     }
                 }
             }
         }
 
-        // Cập nhật bước thời gian trên FX application thread
+        // Đếm lại số lượng từng loại sinh vật
+        int[] counts = new int[3]; // counts[0] = SanXuat, counts[1] = AnCo, counts[2] = AnThit
+
+        for (int i = 0; i < luoi.length; i++) {
+            for (int j = 0; j < luoi[i].length; j++) {
+                if (!luoi[i][j].coTrong()) {
+                    SinhVat sinhvat = luoi[i][j].getSinhvat();
+                    if (sinhvat instanceof SinhVatSanXuat) {
+                        counts[0]++;
+                    } else if (sinhvat instanceof SinhVatAnCo) {
+                        counts[1]++;
+                    } else if (sinhvat instanceof SinhVatAnThit) {
+                        counts[2]++;
+                    }
+                }
+            }
+        }
+
+     // Cập nhật UI trên luồng JavaFX
         Platform.runLater(() -> {
-            buocThoiGian.set(buocThoiGian.get() + 1); // Tăng bước thời gian (cập nhật thông qua IntegerProperty)
+            slsvSanXuat.set(counts[0]);
+            slsvAnCo.set(counts[1]);
+            slsvAnThit.set(counts[2]);
+            buocThoiGian.set(buocThoiGian.get() + 1); // Tăng bước thời gian
+
+            // Cập nhật deathrate lên UI
+            deathrate.set(this.getDeathrate().get());
         });
+
+
     }
+
 
 
 
@@ -223,6 +241,14 @@ public class HeSinhThai {
     public IntegerProperty slsvAnThitProperty() {
         return slsvAnThit;
     }
+    
+    public IntegerProperty deathRateProperty() {
+        return deathrate;
+    }
+
+    public IntegerProperty birthRateProperty() {
+        return birthrate;
+    }
 
 	public int getChieuNgang() {
 		return chieuNgang;
@@ -237,57 +263,6 @@ public class HeSinhThai {
 		return luoi;
 	}
     
-    public int getDeathRate() {
-		return deathrate;
-	}
-
-
-	public void setDeathRate(int deathrate) {
-		this.deathrate = deathrate;
-	}
-
-
-	public int getBirthRate() {
-		return birthrate;
-	}
-
-
-	public void setBirthRate(int birthrate) {
-		this.birthrate = birthrate;
-	}
-
-    
-    public int getBuocThoiGian() {
-        return buocThoiGian.get();
-    }
-
-    public void setBuocThoiGian(int value) {
-        this.buocThoiGian.set(value);
-    }
-
-    public int getSlsvSanXuat() {
-        return slsvSanXuat.get();
-    }
-
-    public void setSlsvSanXuat(int value) {
-        this.slsvSanXuat.set(value);
-    }
-
-    public int getSlsvAnCo() {
-        return slsvAnCo.get();
-    }
-
-    public void setSlsvAnCo(int value) {
-        this.slsvAnCo.set(value);
-    }
-
-    public int getSlsvAnThit() {
-        return slsvAnThit.get();
-    }
-
-    public void setSlsvAnThit(int value) {
-        this.slsvAnThit.set(value);
-    }
 
     public O getO(int x, int y) {
         return luoi[x][y];

@@ -3,7 +3,6 @@ package application.model;
 import java.util.Random;
 
 import javafx.application.Platform;
-
 public class SinhVatAnThit extends SinhVat {
 
     // Constructor không tham số, sẽ gọi constructor của lớp cha và gán hệ sinh thái
@@ -19,8 +18,7 @@ public class SinhVatAnThit extends SinhVat {
     }
 
     // Phương thức di chuyển (chỉ di chuyển khi năng lượng thấp)
- // Phương thức di chuyển (chỉ di chuyển khi năng lượng thấp)
-    public void dichuyen() {
+    public synchronized void dichuyen() {
             // Tìm sinh vật AnCo gần nhất
             SinhVatAnCo sinhVatAnCoGanNhat = timSinhVatAnCoGanNhat();
 
@@ -107,7 +105,7 @@ public class SinhVatAnThit extends SinhVat {
     }
 
     // Phương thức tìm sinh vật AnCo gần nhất
-    private SinhVatAnCo timSinhVatAnCoGanNhat() {
+    private synchronized SinhVatAnCo timSinhVatAnCoGanNhat() {
         SinhVatAnCo sinhVatAnCoGanNhat = null;
         double khoangCachMin = Double.MAX_VALUE;
 
@@ -168,7 +166,7 @@ public class SinhVatAnThit extends SinhVat {
     }
  
  
-    public boolean tieuthu() {
+    public synchronized boolean tieuthu() {
         // Kiểm tra điều kiện trước khi tiêu thụ, chỉ thực hiện nếu năng lượng < 80
         if (this.energy >= 80) {
             System.out.println("Năng lượng đủ, không cần tiêu thụ.");
@@ -204,19 +202,11 @@ public class SinhVatAnThit extends SinhVat {
                         this.x = xMoi;
                         this.y = yMoi;
                         heSinhThai.getO(xMoi, yMoi).setSinhvat(this);
-
-                        // Giảm số lượng sinh vật ăn cỏ trong hệ sinh thái
+                        
                         Platform.runLater(() -> {
-                            if (heSinhThai.getSlsvAnCo() > 0) {
-                                heSinhThai.setSlsvAnCo(heSinhThai.getSlsvAnCo() - 1);
-                            }
+                            heSinhThai.deathRateProperty().set(heSinhThai.deathRateProperty().get() + 1);
                         });
-
-                        // Tăng deathrate trong hệ sinh thái sau khi tiêu thụ thành công
-                        Platform.runLater(() -> {
-                            heSinhThai.setDeathRate(heSinhThai.getDeathRate() + 1);
-                        });
-
+                        
                         System.out.println("Sinh vật ăn thịt tại (" + this.x + ", " + this.y + ") đã ăn sinh vật ăn cỏ tại (" + xMoi + ", " + yMoi + ").");
 
                         return true; // Trả về true khi sinh vật ăn thịt đã ăn được sinh vật ăn cỏ
@@ -231,11 +221,10 @@ public class SinhVatAnThit extends SinhVat {
 
     
     @Override
-    public void sinhsan() {
+    public synchronized void sinhsan() {
         // Kiểm tra nếu năng lượng vượt ngưỡng 100
         if (this.energy > 150) {
-            // Tăng birthrate mỗi lần sinh sản thành công
-            heSinhThai.setBirthRate(heSinhThai.getBirthRate() + 1); // Tăng birthrate trong hệ sinh thái
+
             // Duyệt qua các ô lân cận trong phạm vi 1 ô (x ± 1, y ± 1)
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dy = -1; dy <= 1; dy++) {
@@ -260,12 +249,10 @@ public class SinhVatAnThit extends SinhVat {
 
                             // Đặt sinh vật mới vào ô
                             oLanhCan.setSinhvat(sinhvatMoi);
-
-                            // Tăng số lượng sinh vật ăn thịt trong hệ sinh thái
+                        	// Tăng birthRate trong hệ sinh thái
                             Platform.runLater(() -> {
-                                heSinhThai.setSlsvAnThit(heSinhThai.getSlsvAnThit() + 1);
+                                heSinhThai.birthRateProperty().set(heSinhThai.birthRateProperty().get() + 1);
                             });
-
                             System.out.println("Sinh vật ăn thịt tại (" + this.x + ", " + this.y + ") đã sinh sản tại (" + xMoi + ", " + yMoi + ").");
 
                             // Chỉ sinh sản 1 lần cho mỗi chu kỳ (thoát khỏi vòng lặp)
@@ -279,7 +266,7 @@ public class SinhVatAnThit extends SinhVat {
 
 
     @Override
-    public void chet() {
+    public synchronized void chet() {
         if (this.energy <= 0) {
             // Kiểm tra xem sinh vật có tồn tại trong ô hiện tại hay không
             O oHienTai = heSinhThai.getO(this.x, this.y); // Lấy ô hiện tại
@@ -287,18 +274,8 @@ public class SinhVatAnThit extends SinhVat {
                 // Xóa sinh vật khỏi ô hiện tại
                 oHienTai.setSinhvat(null); // Đặt sinh vật tại ô hiện tại thành null
             }
-
-            // Giảm số lượng sinh vật ăn thịt trong hệ sinh thái trực tiếp và tăng deathRate
             Platform.runLater(() -> {
-                if (heSinhThai.getSlsvAnThit() > 0) {
-                    heSinhThai.setSlsvAnThit(heSinhThai.getSlsvAnThit() - 1); // Giảm số lượng sinh vật ăn thịt
-                }
-
-                // Tăng deathRate của hệ sinh thái
-                heSinhThai.setDeathRate(heSinhThai.getDeathRate() + 1);
-
-                System.out.println("Sinh vật đã chết và bị xóa khỏi ô (" + this.x + ", " + this.y + ").");
-                System.out.println("Death rate của hệ sinh thái hiện tại: " + heSinhThai.getDeathRate());
+                heSinhThai.deathRateProperty().set(heSinhThai.deathRateProperty().get() + 1);
             });
         }
     }
