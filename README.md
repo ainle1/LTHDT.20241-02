@@ -7,3 +7,5 @@ Thành viên
 3.  20225594	Lê Hải Anh 20%
 4.  20225689	Lê Việt Anh 25%
 5.  20226101	Lê Năng Quang Anh 10%
+
+Link video demo: https://www.youtube.com/watch?v=Hh-tNrxrMMg&feature=youtu.be
